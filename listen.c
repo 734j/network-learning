@@ -62,7 +62,7 @@ int main () {
 	len = strlen(msg);
 	bytes_sent = send(newfd, msg, len, 0);
 
-	int rlen = 1000;
+	size_t rlen = 1024;
 	int recv_ret;
 	size_t bytes_recieved = 0;
 	while(true) {
@@ -75,7 +75,8 @@ int main () {
 		}
 		recvmsg[recv_ret] = '\0';
 		fprintf(stdout, "%s", recvmsg);
-		memset(&recvmsg, 0, (size_t)rlen);
+		//fprintf(stdout, "loop");
+		memset(&recvmsg, 0, rlen);
 	}
 	fprintf(stdout, "bytes recieved: %ld\nbytes sent: %d\n", bytes_recieved, bytes_sent);
  
