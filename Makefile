@@ -1,5 +1,5 @@
-CC=egcc
-CFLAGS_TESTBIN=-O3 -Wfatal-errors -Wall -Werror -Wextra -g -Wpedantic -std=gnu99
+CC=gcc
+CFLAGS_TESTBIN=-Og -fsanitize=address -Wfatal-errors -Wall -Werror -Werror=return-type -Wextra -g -Wpedantic -std=gnu99
 CFLAGS=-O3 -flto -march=native -DNDEBUG -fomit-frame-pointer -s -std=gnu99
 MAKEFLAGS += -j$(nproc)
 TARGETS=helloworld
