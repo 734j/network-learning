@@ -17,6 +17,9 @@
 #define __PORT "62000"
 #define BUF_SZ_2 2048
 
+int sockfd = -1;
+size_t bytes_sent = 0;
+
 void talk_to_server (int sockfd) {
 	
 	while (1) {
@@ -29,19 +32,13 @@ void talk_to_server (int sockfd) {
 			continue;
 		}
 
-        if (editbuffer[0] == '\n') { 
-			send(sockfd, editbuffer, fgs_len, 0);
-			continue;
-		} else {
-			send(sockfd, editbuffer, fgs_len, 0);
-			continue;
-		}
+		bytes_sent = bytes_sent + send(sockfd, editbuffer, fgs_len, 0);	   
 	}
 }
 
-void INThandler(int sockfd) {
+void INThandler() {
 
-	fprintf(stderr, "\n");
+	fprintf(stderr, "\nbytes sent: %ld\n", bytes_sent);
 	close(sockfd);
 	exit(0);
 }
@@ -53,7 +50,6 @@ int main (int argc, char *argv[]) {
 		exit(__FAIL);
 	}
 	
-	int sockfd = -1;
 	int gai_result;
 	int connect_result = -1;
 	struct addrinfo hints;

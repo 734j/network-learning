@@ -16,17 +16,18 @@
 #define BACKLOG 2
 
 size_t bytes_recieved = 0;
+int sockfd = -1;
 
 void INThandler() {
 
    	fprintf(stderr, " SIGINT\n");
 	fprintf(stdout, "bytes recieved: %ld\n", bytes_recieved);
+	close(sockfd);
 	exit(0);
 }
 
 int main () {
 
-	int sockfd = -1; // socket fd
 	int gai_result; // result from getaddrinfo
 	int bind_result = -1; // result from bind
 	struct addrinfo *res; // Pointer to linked list sent back by gai
@@ -51,7 +52,7 @@ int main () {
 			continue;
 		}
 
-		bind_result = bind(sockfd, p->ai_addr, p->ai_addrlen); // Bind to socket fd. pass our own address (ai_addr) and the length
+		bind_result = bind(sockfd, p->ai_addr, p->ai_addrlen);
 		if (bind_result != 0) {
 			fprintf(stderr, "bind_result: %d\n", bind_result);
 			close(sockfd);

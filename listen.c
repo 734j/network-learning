@@ -77,11 +77,6 @@ int main () {
 	if (gni == 0) {
 		fprintf(stdout, "Client %s %s just connected!\n", host_ip, port_port);
 	}
-	char *msg = "Connection established!\n";
-	int len;
-	int bytes_sent;
-	len = strlen(msg);
-	bytes_sent = send(newfd, msg, len, 0);
 
 	size_t rlen = 1024;
 	int recv_ret;
@@ -99,7 +94,10 @@ int main () {
 		//fprintf(stdout, "loop");
 		memset(&recvmsg, 0, rlen);
 	}
-	fprintf(stdout, "bytes recieved: %ld\nbytes sent: %d\n", bytes_recieved, bytes_sent);
+	if (recv_ret == -1) {
+		bytes_recieved = bytes_recieved + 1;
+	}
+	fprintf(stdout, "bytes recieved: %ld\n", bytes_recieved);
  
 	return 0;
 }
