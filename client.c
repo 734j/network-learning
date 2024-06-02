@@ -10,14 +10,14 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <signal.h>
 
-// int listen(int sockfd, int backlog); 
 #define __FAIL EXIT_FAILURE
 #define BACKLOG 2
 #define __PORT "62000"
 #define BUF_SZ_2 2048
 
-int talk_to_server (int sockfd) {
+void talk_to_server (int sockfd) {
 	
 	while (1) {
         char editbuffer[BUF_SZ_2];
@@ -26,7 +26,7 @@ int talk_to_server (int sockfd) {
         char *fgs = fgets(editbuffer, BUF_SZ_2, stdin);
 		socklen_t fgs_len = strlen(editbuffer);
 		if (fgs == NULL) {
-			return 0;
+			continue;
 		}
 
         if (editbuffer[0] == '\n') { 
@@ -37,7 +37,13 @@ int talk_to_server (int sockfd) {
 			continue;
 		}
 	}
-	return 0;
+}
+
+void INThandler(int sockfd) {
+
+	fprintf(stderr, "\n");
+	close(sockfd);
+	exit(0);
 }
 
 int main (int argc, char *argv[]) {
@@ -54,7 +60,6 @@ int main (int argc, char *argv[]) {
 	struct addrinfo *res;
 	struct addrinfo *p;
 	memset(&hints, 0, sizeof(hints));
-	//hints.ai_flags = ;
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	
@@ -80,9 +85,11 @@ int main (int argc, char *argv[]) {
 
 	}
 	if (connect_result == -1 || sockfd == -1) {
+		close(sockfd);
 		exit(__FAIL);
 	}
 
+	signal(SIGINT, INThandler);
 	freeaddrinfo(res);
 	talk_to_server(sockfd);
 	
