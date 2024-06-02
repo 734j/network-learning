@@ -40,7 +40,12 @@ int talk_to_server (int sockfd) {
 	return 0;
 }
 
-int main () {
+int main (int argc, char *argv[]) {
+
+	if (argc != 2) {
+		fprintf(stderr, "USAGE: %s [IP]\n", argv[0]);
+		exit(__FAIL);
+	}
 	
 	int sockfd = -1;
 	int gai_result;
@@ -53,9 +58,9 @@ int main () {
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	
-	gai_result = getaddrinfo("192.168.1.18", __PORT, &hints, &res);
+	gai_result = getaddrinfo(argv[1], __PORT, &hints, &res);
 	if (gai_result != 0) {
-		fprintf(stderr, "getaddrinfo: %d", gai_result);
+		fprintf(stderr, "getaddrinfo: %d\n", gai_result);
 		exit(__FAIL);
 	}
 
@@ -78,11 +83,8 @@ int main () {
 		exit(__FAIL);
 	}
 
-	
-	//char *msg = "Client says hello!\n";
-	//size_t len = strlen(msg);
-
-	talk_to_server(sockfd);
 	freeaddrinfo(res);
+	talk_to_server(sockfd);
+	
 	return 0;
 }
