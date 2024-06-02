@@ -15,6 +15,30 @@
 #define __FAIL EXIT_FAILURE
 #define BACKLOG 2
 #define __PORT "62000"
+#define BUF_SZ_2 2048
+
+int talk_to_server (int sockfd) {
+	
+	while (1) {
+        char editbuffer[BUF_SZ_2];
+        fprintf(stdout, ": ");
+
+        char *fgs = fgets(editbuffer, BUF_SZ_2, stdin);
+		socklen_t fgs_len = strlen(editbuffer);
+		if (fgs == NULL) {
+			return 0;
+		}
+
+        if (editbuffer[0] == '\n') { 
+			send(sockfd, editbuffer, fgs_len, 0);
+			continue;
+		} else {
+			send(sockfd, editbuffer, fgs_len, 0);
+			continue;
+		}
+	}
+	return 0;
+}
 
 int main () {
 	
@@ -55,13 +79,10 @@ int main () {
 	}
 
 	
-	char *msg = "Client says hello!\n";
-	size_t len = strlen(msg);
+	//char *msg = "Client says hello!\n";
+	//size_t len = strlen(msg);
 
-	for (int i = 0 ; i < 10 ; i++) {
-		
-		send(sockfd, msg, len, 0);
-	}
+	talk_to_server(sockfd);
 	freeaddrinfo(res);
 	return 0;
 }
