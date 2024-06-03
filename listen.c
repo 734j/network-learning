@@ -10,10 +10,19 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <signal.h>
 
 // int listen(int sockfd, int backlog); 
 #define __FAIL EXIT_FAILURE
 #define BACKLOG 128
+
+int sockfd = -1;
+void INThandler () {
+
+	close(sockfd);
+	fprintf(stderr, " SIGINT\n");
+	exit(0);
+}
 
 size_t recv_message_loop (int newfd) {
 
@@ -43,7 +52,7 @@ size_t recv_message_loop (int newfd) {
 
 int main (void) {
 	
-	int sockfd = -1; // socket fd
+	// sockfd is at the top of the file!!!
 	int gai_result; // result from getaddrinfo
 	int bind_result = -1; // result from bind
 	struct addrinfo *res; // Pointer to linked list sent back by gai
@@ -83,6 +92,8 @@ int main (void) {
 
 	listen(sockfd, BACKLOG); // Actually listen for connections with the sockfd
 
+	signal(SIGINT, INThandler);
+	
 	while (1) {
 		fprintf(stdout, "Waiting for a connection...\n");
 		int newfd;
@@ -92,7 +103,6 @@ int main (void) {
 		newfd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size); // Actually accept. Pass the sockfd, cast their_addr to sockaddr and send the address to the function. Pass the addr_size address so we can handle the length.
 		fprintf(stdout, "Connection is being established...\n");
 		if (newfd == -1) {
-			fprintf(stderr, "newfd: %d\n", newfd);
 			exit(__FAIL);
 		}
 
@@ -108,6 +118,7 @@ int main (void) {
 		char *msg = "Connected\n";
 		send(newfd, msg, 10, 0);
 		recv_message_loop(newfd);
+		close(newfd);
 	}
 
 	return 0;
