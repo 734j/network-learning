@@ -1,6 +1,7 @@
 CC=gcc
 CFLAGS_TESTBIN=-Og -fsanitize=address -Wfatal-errors -Wall -Werror -Werror=return-type -Wextra -g -Wpedantic -std=gnu99
 CFLAGS=-O3 -flto -march=native -DNDEBUG -fomit-frame-pointer -std=gnu99
+CFLAGS_BEEJ_TESTBIN=-Og -fsanitize=address -g -std=gnu99
 MAKEFLAGS += -j$(nproc)
 TARGETS=helloworld
 TARGETS2=binding
@@ -32,7 +33,7 @@ SRCS8=client-DGRAM.c
 all: release
 clean:
 	rm -f bin/$(TARGETS) bin/$(TARGETS2) bin/$(TARGETS3) bin/$(TARGETS4) bin/$(TARGETS5) bin/$(TARGETS6) bin/$(TARGETS7) bin/$(TARGETS8)
-	rm -f test/$(TESTTARGET) test/$(TESTTARGET2) test/$(TESTTARGET3) test/$(TESTTARGET4) test/$(TESTTARGET5) test/$(TESTTARGET6) test/$(TESTTARGET7) test/$(TESTTARGET8) 
+	rm -f test/$(TESTTARGET) test/$(TESTTARGET2) test/$(TESTTARGET3) test/$(TESTTARGET4) test/$(TESTTARGET5) test/$(TESTTARGET6) test/$(TESTTARGET7) test/$(TESTTARGET8)
 
 tests:
 	$(CC) $(CFLAGS_TESTBIN) $(SRCS) -o test/$(TESTTARGET)

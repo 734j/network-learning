@@ -1,6 +1,6 @@
 all: release
 clean:
 	cd .. && make clean
-
+	
 release:
-	cd .. && make tests
+	cd .. && make tests && make beej

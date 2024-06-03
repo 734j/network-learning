@@ -13,10 +13,36 @@
 
 // int listen(int sockfd, int backlog); 
 #define __FAIL EXIT_FAILURE
-#define BACKLOG 2
+#define BACKLOG 128
+
+size_t recv_message_loop (int newfd) {
+
+	size_t rlen = 1024;
+	int recv_ret;
+	size_t bytes_recieved = 0;
+	while(true) {
+
+		char recvmsg[rlen]; 
+		recv_ret = recv(newfd, recvmsg, rlen, 0);
+		bytes_recieved = bytes_recieved+recv_ret;
+		if (recv_ret < 1) {
+			break;
+		}
+		recvmsg[recv_ret] = '\0';
+		fprintf(stdout, "%s", recvmsg);
+		//fprintf(stdout, "loop");
+		memset(&recvmsg, 0, rlen);
+	}
+	if (recv_ret == -1) {
+		bytes_recieved = bytes_recieved + 1;
+	}
+	fprintf(stdout, "bytes recieved: %ld\n", bytes_recieved);
+
+	return bytes_recieved;
+}
 
 int main (void) {
-
+	
 	int sockfd = -1; // socket fd
 	int gai_result; // result from getaddrinfo
 	int bind_result = -1; // result from bind
@@ -55,49 +81,34 @@ int main (void) {
 	
 	freeaddrinfo(res); // free the info because we dont need it anymore
 
-	fprintf(stdout, "Waiting for a connection...\n");
 	listen(sockfd, BACKLOG); // Actually listen for connections with the sockfd
-	
-	socklen_t addr_size; // Size of address
-	struct sockaddr_storage their_addr; // pass this struct to accept because it will hold their address
-	addr_size = sizeof(their_addr); // Check the size of their addr
-	int newfd; // New fd
-	newfd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size); // Actually accept. Pass the sockfd, cast their_addr to sockaddr and send the address to the function. Pass the addr_size address so we can handle the length.
-	fprintf(stdout, "Connection is being established...\n");
-	if (newfd == -1) {
-		fprintf(stderr, "newfd: %d\n", newfd);
-		exit(__FAIL);
-	}
 
-	char host_ip[NI_MAXHOST];
-	char port_port[NI_MAXSERV];
-	int gni;
-    gni = getnameinfo((struct sockaddr *)&their_addr, addr_size, host_ip, sizeof(host_ip), port_port, sizeof(port_port), NI_NUMERICSERV | NI_NUMERICHOST);
-	
-	if (gni == 0) {
-		fprintf(stdout, "Client %s %s just connected!\n", host_ip, port_port);
-	}
-
-	size_t rlen = 1024;
-	int recv_ret;
-	size_t bytes_recieved = 0;
-	while(true) {
-
-		char recvmsg[rlen]; 
-		recv_ret = recv(newfd, recvmsg, rlen, 0);
-		bytes_recieved = bytes_recieved+recv_ret;
-		if (recv_ret < 1) {
-			break;
+	while (1) {
+		fprintf(stdout, "Waiting for a connection...\n");
+		int newfd;
+		socklen_t addr_size; // Size of address
+		struct sockaddr_storage their_addr; // pass this struct to accept because it will hold their address
+		addr_size = sizeof(their_addr); // Check the size of their addr
+		newfd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size); // Actually accept. Pass the sockfd, cast their_addr to sockaddr and send the address to the function. Pass the addr_size address so we can handle the length.
+		fprintf(stdout, "Connection is being established...\n");
+		if (newfd == -1) {
+			fprintf(stderr, "newfd: %d\n", newfd);
+			exit(__FAIL);
 		}
-		recvmsg[recv_ret] = '\0';
-		fprintf(stdout, "%s", recvmsg);
-		//fprintf(stdout, "loop");
-		memset(&recvmsg, 0, rlen);
+
+		char host_ip[NI_MAXHOST];
+		char port_port[NI_MAXSERV];
+		int gni;
+		gni = getnameinfo((struct sockaddr *)&their_addr, addr_size, host_ip, sizeof(host_ip), port_port, sizeof(port_port), NI_NUMERICSERV | NI_NUMERICHOST);
+	
+		if (gni == 0) {
+			fprintf(stdout, "Client %s %s just connected!\n", host_ip, port_port);
+		}
+
+		char *msg = "Connected\n";
+		send(newfd, msg, 10, 0);
+		recv_message_loop(newfd);
 	}
-	if (recv_ret == -1) {
-		bytes_recieved = bytes_recieved + 1;
-	}
-	fprintf(stdout, "bytes recieved: %ld\n", bytes_recieved);
- 
+
 	return 0;
 }
