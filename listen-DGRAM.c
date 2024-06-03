@@ -26,7 +26,7 @@ void INThandler() {
 	exit(0);
 }
 
-int main () {
+int main (void) {
 
 	int gai_result; // result from getaddrinfo
 	int bind_result = -1; // result from bind

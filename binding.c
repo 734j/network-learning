@@ -15,7 +15,7 @@
 
 // Bind section of beej networking
 
-int main () {
+int main (void) {
 
     struct addrinfo hints;
     struct addrinfo *res;

@@ -15,7 +15,7 @@
 #define __FAIL EXIT_FAILURE
 #define BACKLOG 2
 
-int main () {
+int main (void) {
 
 	int sockfd = -1; // socket fd
 	int gai_result; // result from getaddrinfo

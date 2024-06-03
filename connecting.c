@@ -11,7 +11,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-int main () {
+int main (void) {
 
 	int sockfd;
     struct addrinfo *res;

@@ -16,7 +16,7 @@
 #define BACKLOG 2
 #define __PORT "62000"
 
-int main () {
+int main (void) {
 	
 	int sockfd = -1;
 	int gai_result;
