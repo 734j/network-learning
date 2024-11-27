@@ -20,12 +20,12 @@
 int sockfd = -1;
 size_t bytes_sent = 0;
 
-void talk_to_server (int sockfd) {
+void talk_to_server (int ttssockfd) {
 
 	fprintf(stdout, "Waiting to connect...\n");
 	int rcv_ret;
 	char buf_connected[11];
-	rcv_ret = recv(sockfd, buf_connected, 11, 0);
+	rcv_ret = recv(ttssockfd, buf_connected, 11, 0);
 	buf_connected[rcv_ret] = '\0';
 	fprintf(stdout, "%s", buf_connected);
 	while (1) {
@@ -38,7 +38,7 @@ void talk_to_server (int sockfd) {
 			continue;
 		}
 
-		bytes_sent = bytes_sent + send(sockfd, editbuffer, fgs_len, 0);	   
+		bytes_sent = bytes_sent + send(ttssockfd, editbuffer, fgs_len, 0);	   
 	}
 }
 
